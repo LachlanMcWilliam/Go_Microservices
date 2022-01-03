@@ -1,28 +1,24 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/lachlanmcwilliam/microservices/handlers"
 )
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("Hello world!")
-		d, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			http.Error(w, "oops", http.StatusBadRequest)
-			return
-		}
+	l := log.New(os.Stdout, "product-api", log.LstdFlags)
+	hh := handlers.NewHello(l)
+	gh := handlers.NewGoodbye(l)
 
-		fmt.Fprintf(w, "Hello %s", d)
-	})
+	// Create a new multiplexer to handle the routes
+	sm := http.NewServeMux()
+	// Register the handler for the route "/"
+	sm.Handle("/", hh)
+	sm.Handle("/goodbye", gh)
 
-	http.HandleFunc("/goodbye", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("Goodbye world!")
-		fmt.Fprintln(w, "Goodbye")
-	})
-
-	http.ListenAndServe(":9090", nil)
+	// Create a new server to listen on port 9090 and pass in the multiplexer
+	http.ListenAndServe(":9090", sm)
 }
