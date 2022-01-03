@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/lachlanmcwilliam/microservices/handlers"
 )
@@ -15,10 +16,19 @@ func main() {
 
 	// Create a new multiplexer to handle the routes
 	sm := http.NewServeMux()
-	// Register the handler for the route "/"
+
+	// Register the handlers
 	sm.Handle("/", hh)
 	sm.Handle("/goodbye", gh)
 
-	// Create a new server to listen on port 9090 and pass in the multiplexer
-	http.ListenAndServe(":9090", sm)
+	// Create a new server passing the multiplexer
+	s := &http.Server{
+		Addr:         ":9090",
+		Handler:      sm,
+		IdleTimeout:  120 * time.Second,
+		ReadTimeout:  1 * time.Second,
+		WriteTimeout: 1 * time.Second,
+	}
+
+	s.ListenAndServe()
 }
