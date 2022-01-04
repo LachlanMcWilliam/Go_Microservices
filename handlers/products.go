@@ -16,6 +16,18 @@ func NewProducts(l *log.Logger) *Products {
 }
 
 func (p *Products) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// Test the method of the request
+	switch r.Method {
+	// If the request is a GET, call the GetProducts function
+	case http.MethodGet:
+		p.GetProducts(w, r)
+	// Catch all other methods and return a 405 Method Not Allowed
+	default:
+		w.WriteHeader(http.StatusNotFound)
+	}
+}
+
+func (p *Products) GetProducts(w http.ResponseWriter, r *http.Request) {
 	lp := data.GetProducts()
 	err := lp.ToJSON(w)
 	if err != nil {
