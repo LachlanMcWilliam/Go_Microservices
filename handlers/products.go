@@ -23,7 +23,7 @@ func (p *Products) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		p.GetProducts(w, r)
 	// Catch all other methods and return a 405 Method Not Allowed
 	default:
-		w.WriteHeader(http.StatusNotFound)
+		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
 }
 
