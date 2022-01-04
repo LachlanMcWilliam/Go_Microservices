@@ -13,15 +13,13 @@ import (
 
 func main() {
 	l := log.New(os.Stdout, "product-api", log.LstdFlags)
-	hh := handlers.NewHello(l)
-	gh := handlers.NewGoodbye(l)
+	ph := handlers.NewProducts(l)
 
 	// Create a new multiplexer to handle the routes
 	sm := http.NewServeMux()
 
 	// Register the handlers
-	sm.Handle("/", hh)
-	sm.Handle("/goodbye", gh)
+	sm.Handle("/", ph)
 
 	// Create a new server passing the multiplexer
 	s := &http.Server{
