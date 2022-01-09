@@ -27,9 +27,30 @@ func (p *Products) ToJSON(w io.Writer) error {
 	return e.Encode(p)
 }
 
+// Provides a function on the Products struct to create a new JSON decoder
+func (p *Product) FromJSON(r io.Reader) error {
+	e := json.NewDecoder(r)
+	return e.Decode(p)
+}
+
+// CRUD functions
+
 // Returns the list of products
 func GetProducts() Products {
 	return productList
+}
+
+func AddProduct(p *Product) {
+	p.ID = getNextID()
+	p.CreatedOn = time.Now().UTC().String()
+	productList = append(productList, p)
+}
+
+// Data utils
+
+func getNextID() int {
+	lp := productList[len(productList)-1]
+	return lp.ID + 1
 }
 
 // Hardcoded list of products
