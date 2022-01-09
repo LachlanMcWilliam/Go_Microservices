@@ -2,6 +2,7 @@ package data
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"time"
 )
@@ -40,10 +41,24 @@ func GetProducts() Products {
 	return productList
 }
 
+// Adds a new product to the list
 func AddProduct(p *Product) {
 	p.ID = getNextID()
 	p.CreatedOn = time.Now().UTC().String()
 	productList = append(productList, p)
+}
+
+// Updates a product in the list
+func UpdateProduct(id int, prod *Product) error {
+	_, pos, err := findProduct(id)
+	if err != nil {
+		return err
+	}
+
+	prod.ID = id
+	prod.UpdatedOn = time.Now().UTC().String()
+	productList[pos] = prod
+	return nil
 }
 
 // Data utils
@@ -51,6 +66,18 @@ func AddProduct(p *Product) {
 func getNextID() int {
 	lp := productList[len(productList)-1]
 	return lp.ID + 1
+}
+
+var ErrProductNotFound = fmt.Errorf("Product not found")
+
+func findProduct(id int) (*Product, int, error) {
+	for i, p := range productList {
+		if p.ID == id {
+			return p, i, nil
+		}
+	}
+
+	return nil, -1, ErrProductNotFound
 }
 
 // Hardcoded list of products
